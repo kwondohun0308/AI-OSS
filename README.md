@@ -39,4 +39,71 @@
 
 ---
 
+## 📊 DORA Metrics Dashboard
+
+> DORA 4대 DevOps 지표를 GitHub Actions로 자동 수집하고 주간 보고서를 생성합니다.
+
+![DORA Metrics Dashboard](assets/dashboard-preview.svg)
+
+| 지표 | 설명 | 수집 방법 |
+|------|------|-----------|
+| 🚀 **Deployment Frequency** | 배포 빈도 (회/주) | GitHub Deployments / Releases API |
+| ⏱ **Lead Time for Changes** | 첫 커밋 → 배포까지 소요 시간 | PR 커밋 + 배포 타임스탬프 |
+| 🔧 **MTTR** | 인시던트 발생 → 해결까지 평균 시간 | `incident` / `hotfix` 라벨 이슈 |
+| ❌ **Change Failure Rate** | 배포 후 장애 발생 비율 | 배포 실패 상태 + 인시던트 이슈 |
+
+### 자동화 구조
+
+```
+push to main / PR merge / 매일 자정
+        │
+        ▼
+.github/workflows/dora-metrics.yml
+        │  ① collect_dora_metrics.py  ─ GitHub API 호출
+        │  ② generate_report.py       ─ Markdown 주간 보고서 생성
+        │  ③ data/metrics.json        ─ JSON 아티팩트 커밋 & 업로드
+        ▼
+매주 월요일 09:00 UTC
+        │
+        ▼
+.github/workflows/weekly-report.yml
+        └─ reports/weekly-report-YYYY-MM-DD.md 자동 생성
+```
+
+### 파일 구조
+
+```
+.github/workflows/
+  dora-metrics.yml         # 매일 + push 트리거 수집 워크플로우
+  weekly-report.yml        # 매주 월요일 보고서 워크플로우
+scripts/
+  collect_dora_metrics.py  # DORA 지표 수집 스크립트
+  generate_report.py       # 주간 보고서 생성 스크립트
+  requirements.txt         # Python 의존성
+dashboard/
+  index.html               # Chart.js 인터랙티브 대시보드
+data/
+  metrics.json             # 누적 지표 JSON (자동 갱신)
+reports/
+  latest-report.md         # 최신 주간 보고서
+  weekly-report-*.md       # 날짜별 보고서 아카이브
+assets/
+  dashboard-preview.svg    # 대시보드 미리보기 이미지
+```
+
+### 최신 보고서
+
+👉 [reports/latest-report.md](reports/latest-report.md)
+
+### DORA 등급 기준
+
+| 등급 | 배포 빈도 | 리드타임 | MTTR | 변경 실패율 |
+|------|-----------|----------|------|------------|
+| 🟢 Elite  | ≥ 1회/일 | < 1시간 | < 1시간 | ≤ 5%  |
+| 🔵 High   | ≥ 1회/주 | < 1일   | < 1일   | ≤ 10% |
+| 🟡 Medium | ≥ 1회/월 | < 1주   | < 1주   | ≤ 15% |
+| 🔴 Low    | < 1회/월 | ≥ 1주   | ≥ 1주   | > 15% |
+
+---
+
 
