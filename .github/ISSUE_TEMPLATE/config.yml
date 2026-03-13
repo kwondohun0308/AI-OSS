@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 프로젝트 문서
+    url: https://github.com/kwondohun0308/AI-OSS/blob/main/README.md
+    about: README에서 프로젝트 전반 정보를 확인하세요.

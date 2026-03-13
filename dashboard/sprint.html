@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sprint Analytics Dashboard — AI-OSS</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --bg:#0d1117; --surface:#161b22; --border:#30363d;
+      --text:#e6edf3; --muted:#8b949e;
+      --blue:#58a6ff; --green:#3fb950; --yellow:#d29922;
+      --red:#f85149; --purple:#bc8cff; --orange:#f0883e;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Segoe UI','Noto Sans KR',Arial,sans-serif;padding:24px;}
+
+    /* Header */
+    header{display:flex;align-items:center;justify-content:space-between;
+           margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+    header h1{font-size:1.4rem;font-weight:700;}
+    header h1 span{color:var(--blue);}
+    #last-updated{font-size:.78rem;color:var(--muted);}
+
+    /* Sprint selector */
+    .sprint-tabs{display:flex;gap:8px;margin-bottom:20px;}
+    .sprint-tab{padding:6px 18px;border-radius:20px;border:1px solid var(--border);
+                background:var(--surface);color:var(--muted);cursor:pointer;font-size:.82rem;transition:.2s;}
+    .sprint-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+    /* KPI Cards */
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px;}
+    .card-label{font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+    .card-value{font-size:2.2rem;font-weight:700;line-height:1;margin-bottom:2px;}
+    .card-sub{font-size:.75rem;color:var(--muted);}
+    .c-blue{color:var(--blue);} .c-green{color:var(--green);}
+    .c-yellow{color:var(--yellow);} .c-purple{color:var(--purple);}
+
+    /* Progress bar */
+    .progress-wrap{margin-top:10px;}
+    .progress-bar{width:100%;height:6px;background:#21262d;border-radius:3px;overflow:hidden;}
+    .progress-fill{height:100%;border-radius:3px;background:var(--green);transition:.4s;}
+
+    /* Charts grid */
+    .charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:18px;}
+    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;}
+    .chart-title{font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:14px;}
+    canvas{width:100%!important;}
+
+    /* Error banner */
+    #error-banner{display:none;background:#3a0d0d;border:1px solid var(--red);
+                  border-radius:6px;padding:10px 14px;margin-bottom:16px;
+                  font-size:.82rem;color:var(--red);}
+    /* Kanban legend */
+    .kanban-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;}
+    .kl-item{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--muted);}
+    .kl-dot{width:10px;height:10px;border-radius:50%;}
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Sprint Analytics — <span>AI-OSS</span></h1>
+  <div id="last-updated">로딩 중…</div>
+</header>
+
+<div id="error-banner"></div>
+
+<!-- Sprint selector -->
+<div class="sprint-tabs" id="sprint-tabs"></div>
+
+<!-- KPI cards -->
+<div class="cards">
+  <div class="card">
+    <div class="card-label">🚀 Velocity</div>
+    <div class="card-value c-blue" id="kpi-velocity">—</div>
+    <div class="card-sub">완료 이슈 (이번 스프린트)</div>
+  </div>
+  <div class="card">
+    <div class="card-label">⏱ Avg Cycle Time</div>
+    <div class="card-value c-green" id="kpi-ct">—</div>
+    <div class="card-sub">이슈 생성 → 종료 평균 시간</div>
+  </div>
+  <div class="card">
+    <div class="card-label">✅ 완료율</div>
+    <div class="card-value c-yellow" id="kpi-rate">—</div>
+    <div class="card-sub" id="kpi-rate-detail">—</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="kpi-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label">📅 남은 기간</div>
+    <div class="card-value c-purple" id="kpi-days">—</div>
+    <div class="card-sub" id="kpi-due">—</div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts">
+  <div class="chart-card" style="grid-column:1/-1;">
+    <div class="chart-title">📉 Burndown Chart (이상 vs 실제 잔여 이슈)</div>
+    <canvas id="chart-burndown" height="220"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">⚡ Velocity (스프린트별 완료 이슈)</div>
+    <canvas id="chart-velocity" height="220"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">⏱ Cycle Time 분포 (시간)</div>
+    <canvas id="chart-cycletime" height="220"></canvas>
+  </div>
+</div>
+
+<script>
+// ── 샘플 데이터 (data/sprint-metrics.json 로드 실패 시 사용) ─────────────────
+const SAMPLE = {
+  collected_at: "2026-03-13T12:00:00+00:00",
+  sprints: [
+    {
+      name: "Sprint 1 — W1~W8 민원 검색 MVP",
+      start_date: "2026-03-13", due_date: "2026-05-08",
+      total_issues: 6, closed_issues: 1, open_issues: 5,
+      velocity: 1, completion_rate: 16.7,
+      avg_cycle_time_h: 28.5,
+      cycle_times_h: [28.5],
+      burndown: (() => {
+        const start = new Date("2026-03-13"), end = new Date("2026-05-08");
+        const total = 6, days = Math.round((end-start)/86400000);
+        const arr = [];
+        for (let i = 0; i <= days; i++) {
+          const d = new Date(start); d.setDate(d.getDate()+i);
+          const ds = d.toISOString().slice(0,10);
+          arr.push({date:ds, actual: i===0?6:i===1?5:null, ideal:Math.max(0,Math.round(total*(1-i/days)))});
+        }
+        return arr;
+      })()
+    },
+    {
+      name: "Sprint 2 — W9~W16 LLM 고도화 및 배포",
+      start_date: "2026-05-09", due_date: "2026-07-03",
+      total_issues: 6, closed_issues: 0, open_issues: 6,
+      velocity: 0, completion_rate: 0,
+      avg_cycle_time_h: null,
+      cycle_times_h: [],
+      burndown: (() => {
+        const start = new Date("2026-05-09"), end = new Date("2026-07-03");
+        const total = 6, days = Math.round((end-start)/86400000);
+        const arr = [];
+        for (let i = 0; i <= days; i++) {
+          const d = new Date(start); d.setDate(d.getDate()+i);
+          arr.push({date:d.toISOString().slice(0,10), actual:null, ideal:Math.max(0,Math.round(total*(1-i/days)))});
+        }
+        return arr;
+      })()
+    }
+  ]
+};
+
+// ── 차트 인스턴스 보관 ──────────────────────────────────────────────────────
+let burndownChart, velocityChart, ctChart;
+let allSprints = [];
+let activeSprint = 0;
+
+const fmtHours = h => {
+  if (h == null) return 'N/A';
+  if (h < 1) return `${(h*60).toFixed(0)}분`;
+  if (h < 24) return `${h.toFixed(1)}h`;
+  return `${(h/24).toFixed(1)}일`;
+};
+
+const daysUntil = dateStr => {
+  const diff = new Date(dateStr) - new Date();
+  return Math.ceil(diff / 86400000);
+};
+
+// ── KPI 업데이트 ───────────────────────────────────────────────────────────
+function updateKPIs(sp) {
+  document.getElementById('kpi-velocity').textContent = sp.velocity;
+  document.getElementById('kpi-ct').textContent       = fmtHours(sp.avg_cycle_time_h);
+  document.getElementById('kpi-rate').textContent     = `${sp.completion_rate}%`;
+  document.getElementById('kpi-rate-detail').textContent =
+    `${sp.closed_issues} / ${sp.total_issues}개 완료`;
+  document.getElementById('kpi-bar').style.width = `${sp.completion_rate}%`;
+
+  const days = daysUntil(sp.due_date);
+  document.getElementById('kpi-days').textContent = days > 0 ? `${days}일` : '마감';
+  document.getElementById('kpi-due').textContent  = `마감: ${sp.due_date}`;
+}
+
+// ── 차트 옵션 공통 ─────────────────────────────────────────────────────────
+const gridColor = '#21262d';
+const tickColor = '#8b949e';
+const baseOpts = {
+  responsive: true, plugins: { legend: { labels: { color: tickColor, font: {size:11} } } },
+  scales: {
+    x: { ticks:{color:tickColor,font:{size:10},maxTicksLimit:12}, grid:{color:gridColor} },
+    y: { ticks:{color:tickColor,font:{size:10}}, grid:{color:gridColor}, beginAtZero:true },
+  }
+};
+
+// ── Burndown 차트 ─────────────────────────────────────────────────────────
+function renderBurndown(sp) {
+  const bd      = sp.burndown || [];
+  const labels  = bd.map(d => d.date.slice(5));  // MM-DD
+  const actual  = bd.map(d => d.actual);
+  const ideal   = bd.map(d => d.ideal);
+
+  const cfg = {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: '이상 번다운', data: ideal,
+          borderColor: '#58a6ff', backgroundColor: 'transparent',
+          borderDash: [6,3], borderWidth: 2,
+          pointRadius: 0, tension: 0,
+        },
+        {
+          label: '실제 잔여', data: actual,
+          borderColor: '#3fb950', backgroundColor: '#3fb95020',
+          fill: true, borderWidth: 2,
+          pointRadius: 3, pointBackgroundColor: '#3fb950', tension: 0.2,
+        },
+      ]
+    },
+    options: {
+      ...baseOpts,
+      plugins: { ...baseOpts.plugins,
+        tooltip: { callbacks: {
+          title: ctx => `날짜: ${ctx[0].label}`,
+          label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y ?? 'N/A'}개`
+        }}
+      }
+    }
+  };
+
+  if (burndownChart) burndownChart.destroy();
+  burndownChart = new Chart(document.getElementById('chart-burndown'), cfg);
+}
+
+// ── Velocity 차트 ─────────────────────────────────────────────────────────
+function renderVelocity(sprints) {
+  const cfg = {
+    type: 'bar',
+    data: {
+      labels: sprints.map(s => s.name.split('—')[0].trim()),
+      datasets: [
+        {
+          label: '완료', data: sprints.map(s => s.closed_issues),
+          backgroundColor: '#3fb95099', borderColor: '#3fb950', borderWidth: 1, borderRadius: 4,
+        },
+        {
+          label: '미완료', data: sprints.map(s => s.open_issues),
+          backgroundColor: '#f8514955', borderColor: '#f85149', borderWidth: 1, borderRadius: 4,
+        },
+      ]
+    },
+    options: {
+      ...baseOpts,
+      scales: {
+        ...baseOpts.scales,
+        x: { ...baseOpts.scales.x, stacked: true },
+        y: { ...baseOpts.scales.y, stacked: true },
+      }
+    }
+  };
+  if (velocityChart) velocityChart.destroy();
+  velocityChart = new Chart(document.getElementById('chart-velocity'), cfg);
+}
+
+// ── Cycle Time 히스토그램 ─────────────────────────────────────────────────
+function renderCycleTime(sp) {
+  const times = sp.cycle_times_h || [];
+  if (!times.length) {
+    if (ctChart) ctChart.destroy();
+    ctChart = new Chart(document.getElementById('chart-cycletime'), {
+      type: 'bar',
+      data: { labels: ['데이터 없음'], datasets: [{ data: [0], backgroundColor: '#30363d' }] },
+      options: { ...baseOpts, plugins: { legend: { display: false } } },
+    });
+    return;
+  }
+  // 버킷: 0-8h, 8-24h, 24-48h, 48-72h, 72h+
+  const buckets = ['0-8h','8-24h','24-48h','48-72h','72h+'];
+  const counts  = [0,0,0,0,0];
+  times.forEach(h => {
+    if      (h < 8)  counts[0]++;
+    else if (h < 24) counts[1]++;
+    else if (h < 48) counts[2]++;
+    else if (h < 72) counts[3]++;
+    else             counts[4]++;
+  });
+  const cfg = {
+    type: 'bar',
+    data: {
+      labels: buckets,
+      datasets: [{
+        label: '이슈 수', data: counts,
+        backgroundColor: ['#58a6ff99','#3fb95099','#d2992299','#f0883e99','#f8514999'],
+        borderColor:     ['#58a6ff',  '#3fb950',  '#d29922',  '#f0883e',  '#f85149'],
+        borderWidth: 1, borderRadius: 4,
+      }]
+    },
+    options: { ...baseOpts, plugins: { legend: { display: false } } }
+  };
+  if (ctChart) ctChart.destroy();
+  ctChart = new Chart(document.getElementById('chart-cycletime'), cfg);
+}
+
+// ── 탭 생성 ──────────────────────────────────────────────────────────────
+function buildTabs(sprints) {
+  const container = document.getElementById('sprint-tabs');
+  container.innerHTML = '';
+  sprints.forEach((sp, i) => {
+    const btn = document.createElement('button');
+    btn.className = `sprint-tab${i === activeSprint ? ' active' : ''}`;
+    btn.textContent = sp.name.split('—')[0].trim();
+    btn.onclick = () => { activeSprint = i; applyData(allSprints, i); };
+    container.appendChild(btn);
+  });
+}
+
+// ── 전체 렌더 ─────────────────────────────────────────────────────────────
+function applyData(sprints, sprintIdx) {
+  allSprints = sprints;
+  const sp   = sprints[sprintIdx];
+  buildTabs(sprints);
+  updateKPIs(sp);
+  renderBurndown(sp);
+  renderVelocity(sprints);
+  renderCycleTime(sp);
+}
+
+// ── 데이터 로드 ───────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch('../data/sprint-metrics.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    if (!json.sprints || !json.sprints.length) throw new Error('empty');
+
+    const ts = new Date(json.collected_at);
+    document.getElementById('last-updated').textContent =
+      `마지막 업데이트: ${ts.toLocaleString('ko-KR')}`;
+    applyData(json.sprints, 0);
+  } catch(e) {
+    const banner = document.getElementById('error-banner');
+    banner.style.display = 'block';
+    banner.textContent   = `⚠ sprint-metrics.json 로드 실패 (${e.message}). 샘플 데이터를 표시합니다.`;
+    document.getElementById('last-updated').textContent = '샘플 데이터';
+    applyData(SAMPLE.sprints, 0);
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>

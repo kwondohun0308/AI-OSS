@@ -107,3 +107,57 @@ assets/
 ---
 
 
+## 📋 Sprint Kanban & Analytics
+
+> GitHub Projects v2 칸반 보드 + Cycle Time / Velocity / Burndown 자동 분석
+
+### 칸반 컬럼 구조
+
+| 컬럼 | 설명 |
+|------|------|
+| Backlog | 아직 스프린트에 할당되지 않은 항목 |
+| To Do | 이번 스프린트에서 처리할 예정 |
+| In Progress | 현재 진행 중 |
+| Review | 코드 리뷰 / 테스트 중 |
+| Done | 완료 |
+
+### 라벨 체계
+
+| 카테고리 | 라벨 |
+|---------|------|
+| 타입 | `type:bug` `type:feature` `type:enhancement` `type:docs` `type:chore` |
+| 우선순위 | `priority:critical` `priority:high` `priority:medium` `priority:low` |
+| 상태 | `status:backlog` `status:todo` `status:in-progress` `status:review` `status:done` |
+| 컴포넌트 | `component:frontend` `component:backend` `component:data` `component:infra` |
+| 스프린트 | `sprint:1` `sprint:2` |
+
+### 마일스톤
+
+| 마일스톤 | 기간 | 목표 |
+|---------|------|------|
+| Sprint 1 — W1~W8 | ~ 2026-05-08 | 크롤러, FAISS 검색 MVP, Streamlit UI |
+| Sprint 2 — W9~W16 | ~ 2026-07-03 | sLLM 답변 생성, 모델 최적화, 배포 패키지 |
+
+### Sprint Analytics 파일 구조
+
+```
+.github/workflows/sprint-analytics.yml  # 이슈 종료 트리거 + 매주 수집
+.github/ISSUE_TEMPLATE/
+  bug_report.yml                         # 버그 리포트 템플릿
+  feature_request.yml                    # 기능 제안 템플릿
+  config.yml                             # 빈 이슈 비활성화
+scripts/
+  setup_project.py                       # 라벨/마일스톤/이슈/Project 일괄 생성 (1회 실행)
+  collect_sprint_metrics.py              # Cycle Time · Velocity · Burndown 수집
+data/sprint-metrics.json                 # 스프린트 지표 JSON
+reports/latest-sprint-report.md          # 최신 스프린트 보고서
+dashboard/sprint.html                    # Chart.js 스프린트 대시보드
+```
+
+### 최신 스프린트 보고서
+
+👉 [reports/latest-sprint-report.md](reports/latest-sprint-report.md)
+
+---
+
+

@@ -1,0 +1,75 @@
+name: 🐛 Bug Report
+description: 버그를 신고해 주세요
+title: "[Bug] "
+labels: ["type:bug", "status:backlog"]
+body:
+  - type: markdown
+    attributes:
+      value: "버그 신고 감사합니다. 아래 항목을 최대한 상세히 작성해 주세요."
+
+  - type: input
+    id: summary
+    attributes:
+      label: 버그 요약
+      placeholder: 어떤 버그가 발생했나요? 한 줄로 요약해 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 재현 방법
+      placeholder: |
+        1. ...
+        2. ...
+        3. 에러 발생
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 예상 동작
+      placeholder: 정상적으로 동작했다면 어떤 결과가 나와야 했나요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작 / 에러 메시지
+      placeholder: 실제로 어떤 결과가 나왔나요? 에러 로그를 붙여넣어 주세요.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 우선순위
+      options:
+        - critical
+        - high
+        - medium
+        - low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 컴포넌트
+      options:
+        - component:frontend
+        - component:backend
+        - component:data
+        - component:infra
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 환경 정보
+      placeholder: "OS, Python 버전, Docker 버전 등"
+    validations:
+      required: false

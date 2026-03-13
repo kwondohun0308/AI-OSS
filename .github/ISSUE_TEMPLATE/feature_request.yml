@@ -1,0 +1,76 @@
+name: ✨ Feature Request
+description: 새 기능을 제안해 주세요
+title: "[Feature] "
+labels: ["type:feature", "status:backlog"]
+body:
+  - type: markdown
+    attributes:
+      value: "기능 제안 감사합니다. 구현하려는 내용을 구체적으로 작성해 주세요."
+
+  - type: input
+    id: summary
+    attributes:
+      label: 기능 요약
+      placeholder: 어떤 기능을 추가하고 싶으신가요? 한 줄로 요약해 주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: 배경 및 동기 (Why)
+      placeholder: 왜 이 기능이 필요한가요? 어떤 문제를 해결하나요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 상세 설명
+      placeholder: |
+        - [ ] 작업 항목 1
+        - [ ] 작업 항목 2
+        - [ ] 작업 항목 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 완료 기준 (Acceptance Criteria)
+      placeholder: 이 기능이 완성됐을 때 어떤 상태여야 하나요?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 우선순위
+      options:
+        - high
+        - medium
+        - low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: 컴포넌트
+      options:
+        - component:frontend
+        - component:backend
+        - component:data
+        - component:infra
+    validations:
+      required: false
+
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: 스프린트
+      options:
+        - sprint:1
+        - sprint:2
+    validations:
+      required: false
