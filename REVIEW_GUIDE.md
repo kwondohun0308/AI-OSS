@@ -24,6 +24,8 @@ When you review at least 3 PRs/comments, record links here:
 2. PR: `<link>`  Comment: `[SHOULD] ...`
 3. PR: `<link>`  Comment: `[SHOULD] ...`
 
+Tip: open each review comment, copy the direct comment URL, and paste it here as evidence.
+
 ## Reviewer Checklist
 - [ ] Business logic is correct
 - [ ] Failure cases are handled
