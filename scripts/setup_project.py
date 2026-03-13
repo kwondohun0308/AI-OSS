@@ -256,6 +256,28 @@ def rest(method: str, path: str, **kwargs):
     resp = requests.request(method, url, headers=REST_HEADERS, timeout=30, **kwargs)
     if resp.status_code in (422,):
         return resp   # 처리는 호출 측에서
+    if resp.status_code == 403:
+        try:
+            body = resp.json()
+        except Exception:
+            body = {"message": resp.text}
+        msg = body.get("message", "Forbidden")
+        docs = body.get("documentation_url", "")
+        raise RuntimeError(
+            "GitHub API 403 Forbidden\n"
+            f"- 요청: {method} {url}\n"
+            f"- 메시지: {msg}\n"
+            f"- docs: {docs}\n\n"
+            "PAT 권한을 확인하세요. (Fine-grained PAT 기준)\n"
+            "1) Repository access: AI-OSS 포함\n"
+            "2) Repository permissions:\n"
+            "   - Issues: Read and write\n"
+            "   - Pull requests: Read-only 이상\n"
+            "   - Contents: Read-only 이상\n"
+            "3) Account permissions:\n"
+            "   - Projects: Read and write\n"
+            "4) 토큰 만료 여부/활성 여부 확인"
+        )
     resp.raise_for_status()
     return resp
 
@@ -468,12 +490,22 @@ def main() -> None:
         sys.exit(1)
     print(f"=== GitHub Project Setup: {REPO} ===")
 
-    create_labels()
-    milestone_numbers = create_milestones()
-    created_issues    = create_issues(milestone_numbers)
+    try:
+        create_labels()
+        milestone_numbers = create_milestones()
+        created_issues    = create_issues(milestone_numbers)
+    except Exception as e:
+        print("\n[ERROR] 초기 리소스 생성 단계에서 실패했습니다.")
+        print(e)
+        sys.exit(1)
 
     if created_issues:
-        setup_project(created_issues)
+        try:
+            setup_project(created_issues)
+        except Exception as e:
+            print("\n[ERROR] GitHub Project 생성 단계에서 실패했습니다.")
+            print(e)
+            sys.exit(1)
     else:
         print("\n[!] 새로 생성된 이슈가 없어 프로젝트 보드 자동 추가를 건너뜁니다.")
         print("    이슈가 이미 존재하면 GitHub UI에서 직접 프로젝트에 추가하세요.")
