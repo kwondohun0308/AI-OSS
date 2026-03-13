@@ -41,6 +41,7 @@ Examples:
   - `[MUST]` merge-blocking problem
   - `[SHOULD]` recommended improvement
   - `[NIT]` minor suggestion
+- Example: `[SHOULD] Consider adding a small regression test for this parser edge case.`
 - At least 1 approval is required by branch protection
 - For assignment: perform at least 3 review comments in total using `[MUST]/[SHOULD]`
 
