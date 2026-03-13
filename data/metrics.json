@@ -62,5 +62,37 @@
       "total": 0,
       "level": "Unknown"
     }
+  },
+  {
+    "collected_at": "2026-03-13T03:29:32.671335+00:00",
+    "period": {
+      "start": "2026-02-11T03:29:32.671335+00:00",
+      "end": "2026-03-13T03:29:32.671335+00:00",
+      "days": 30
+    },
+    "deployment_frequency": {
+      "total": 17,
+      "per_day": 0.567,
+      "per_week": 3.97,
+      "level": "High",
+      "source": "commits_to_main"
+    },
+    "lead_time_for_changes": {
+      "average_hours": 0,
+      "median_hours": 0,
+      "level": "Unknown",
+      "samples": 0
+    },
+    "mttr": {
+      "average_hours": 0,
+      "level": "Unknown",
+      "samples": 0
+    },
+    "change_failure_rate": {
+      "rate": 0.0,
+      "failed": 0,
+      "total": 0,
+      "level": "Unknown"
+    }
   }
 ]
