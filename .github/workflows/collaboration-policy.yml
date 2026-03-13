@@ -1,0 +1,57 @@
+name: Collaboration Policy
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  branch-name-policy:
+    name: Branch Strategy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate source branch name
+        shell: bash
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          echo "Branch: $BRANCH"
+          if [[ "$BRANCH" =~ ^(feature|fix|docs|refactor|test|chore|hotfix)/[a-z0-9._-]+$ ]]; then
+            echo "Branch strategy check passed"
+          else
+            echo "Invalid branch name: $BRANCH"
+            echo "Use one of: feature/*, fix/*, docs/*, refactor/*, test/*, chore/*, hotfix/*"
+            exit 1
+          fi
+
+  pr-title-conventional:
+    name: PR Title Conventional Commit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            refactor
+            test
+            chore
+            ci
+            build
+            perf
+            revert
+
+  commits-conventional:
+    name: Commit Messages Conventional
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lint commit messages
+        uses: wagoid/commitlint-github-action@v6
+        with:
+          configFile: .commitlintrc.json

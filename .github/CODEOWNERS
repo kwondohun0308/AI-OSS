@@ -1,0 +1,13 @@
+# Default owners
+* @kwondohun0308
+
+# Workflows and governance
+/.github/ @kwondohun0308
+/.github/workflows/ @kwondohun0308
+
+# Backend / scripts
+/scripts/ @kwondohun0308
+
+# Dashboards / docs
+/dashboard/ @kwondohun0308
+*.md @kwondohun0308
