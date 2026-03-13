@@ -160,4 +160,78 @@ dashboard/sprint.html                    # Chart.js 스프린트 대시보드
 
 ---
 
+## 🤝 Collaboration Workflow
+
+> Feature branch 전략, Conventional Commits, PR 리뷰 규칙을 적용한 협업 워크플로우입니다.
+
+### 브랜치 전략
+
+`main` 브랜치를 기준으로 아래 prefix를 사용하는 feature branch workflow를 적용했습니다.
+
+- `feature/<scope>-<short-desc>`
+- `fix/<scope>-<short-desc>`
+- `docs/<scope>-<short-desc>`
+- `refactor/<scope>-<short-desc>`
+- `test/<scope>-<short-desc>`
+- `chore/<scope>-<short-desc>`
+- `hotfix/<scope>-<short-desc>`
+
+### Conventional Commits 규칙
+
+커밋/PR 제목 형식:
+
+```text
+<type>(<scope>): <subject>
+```
+
+예시:
+
+- `feat(collab): add PR governance templates and branch policy`
+- `docs(collab): add policy check trigger file`
+- `docs(review): add evidence recording tip`
+
+### 협업 문서 및 설정 파일
+
+```
+.github/
+  PULL_REQUEST_TEMPLATE.md              # PR 템플릿
+  CODEOWNERS                            # 코드 소유자 지정
+  workflows/collaboration-policy.yml    # 브랜치명/PR 제목/커밋 메시지 검사
+.commitlintrc.json                      # Conventional Commits 규칙
+CONTRIBUTING.md                         # 브랜치 전략 및 기여 가이드
+REVIEW_GUIDE.md                         # 리뷰 기준 및 [MUST]/[SHOULD] 규칙
+scripts/setup_branch_protection.py      # main 브랜치 보호 규칙 적용 스크립트
+```
+
+### 브랜치 보호 규칙
+
+`main` 브랜치에 대해 아래 보호 규칙을 적용하도록 구성했습니다.
+
+- Pull Request 기반 병합 강제
+- Required status checks 통과 필수
+- Conversation resolution 필수
+- Linear history 유지
+- Force push / 삭제 비허용
+- CODEOWNERS 리뷰 요구 가능
+
+### PR 리뷰 수행 결과
+
+과제 요구사항에 맞춰 `[MUST]`, `[SHOULD]` 태그를 사용한 구조화된 리뷰 코멘트를 3건 작성했습니다.
+
+| PR | 태그 | 리뷰 요약 |
+|----|------|-----------|
+| #14 `docs(collab): add policy check trigger file` | `[MUST]` | 테스트용 파일의 목적을 README 또는 PR 본문에서 더 명확히 설명해야 한다는 피드백 |
+| #15 `docs(contributing): add review comment example` | `[SHOULD]` | 예시 코멘트가 어떤 상황에서 쓰이는지 한 줄 설명을 추가하면 더 좋다는 피드백 |
+| #16 `docs(review): add evidence recording tip` | `[SHOULD]` | 리뷰 증빙 링크 복사 절차를 한 줄 더 적으면 문서 완성도가 높아진다는 피드백 |
+
+### 제출용 확인 포인트
+
+- Feature branch에서 PR 생성 완료
+- Conventional Commit 형식 PR 제목/커밋 적용 완료
+- PR 템플릿 / CODEOWNERS / CONTRIBUTING / REVIEW_GUIDE 작성 완료
+- 브랜치 보호 규칙 적용 가능 상태 구성 완료
+- `[MUST]` / `[SHOULD]` 태그 리뷰 3건 수행 완료
+
+---
+
 
