@@ -1,0 +1,383 @@
+name: CI/CD Pipeline - Week 7
+
+# Trigger on push and pull requests
+on:
+  push:
+    branches: [main, feature/*, develop]
+    paths:
+      - 'week7-ci-cd/**'
+      - '.github/workflows/ci-cd-week7.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'week7-ci-cd/**'
+  workflow_dispatch:
+
+# Environment variables
+env:
+  ARTIFACT_DIR: build-artifacts
+
+jobs:
+  # ============================================================
+  # LINT JOB - Code quality checks
+  # ============================================================
+  lint:
+    name: Code Quality Check (Lint)
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r week7-ci-cd/requirements.txt
+      
+      - name: Run flake8 linting
+        run: |
+          echo "🔍 Running flake8 linting..."
+          flake8 week7-ci-cd/app --max-line-length=100 --count --statistics
+      
+      - name: Run isort import check
+        run: |
+          echo "🔍 Checking import formatting..."
+          isort week7-ci-cd/app --check-only --diff
+      
+      - name: Run black code format check
+        run: |
+          echo "🔍 Checking code formatting..."
+          black week7-ci-cd/app --check
+
+  # ============================================================
+  # TEST JOB - Matrix testing across Python versions and OS
+  # ============================================================
+  test:
+    name: Test (Python ${{ matrix.python-version }} on ${{ matrix.os }})
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false  # Continue testing even if one version fails
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r week7-ci-cd/requirements.txt
+      
+      - name: Run pytest tests
+        run: |
+          echo "🧪 Running tests for Python ${{ matrix.python-version }} on ${{ matrix.os }}..."
+          pytest week7-ci-cd/tests -v --cov=week7-ci-cd/app --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml --junit-xml=test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
+          flags: unittests
+          name: ${{ matrix.os }}-py${{ matrix.python-version }}
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
+          path: test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
+          retention-days: 30
+
+  # ============================================================
+  # BUILD JOB - Build artifacts (depends on TEST)
+  # ============================================================
+  build:
+    name: Build Artifacts
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r week7-ci-cd/requirements.txt
+          pip install wheel twine
+      
+      - name: Create build directory
+        run: mkdir -p ${{ env.ARTIFACT_DIR }}
+      
+      - name: Generate coverage report
+        run: |
+          pytest week7-ci-cd/tests --cov=week7-ci-cd/app --cov-report=html --cov-report=term-missing
+          cp -r htmlcov ${{ env.ARTIFACT_DIR }}/coverage-report
+      
+      - name: Create build artifacts
+        run: |
+          # Copy application code
+          cp -r week7-ci-cd/app ${{ env.ARTIFACT_DIR }}/
+          
+          # Copy configuration files
+          cp week7-ci-cd/requirements.txt ${{ env.ARTIFACT_DIR }}/
+          cp week7-ci-cd/pyproject.toml ${{ env.ARTIFACT_DIR }}/
+          
+          # Create build manifest
+          echo "Build Information:" > ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
+          echo "Date: $(date)" >> ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
+          echo "Python: ${{ matrix.python-version }}" >> ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
+          echo "Commit: ${{ github.sha }}" >> ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
+          echo "Branch: ${{ github.ref }}" >> ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-${{ github.run_number }}
+          path: ${{ env.ARTIFACT_DIR }}/
+          retention-days: 90
+
+  # ============================================================
+  # SECURITY JOB - Security checks
+  # ============================================================
+  security:
+    name: Security Checks
+    needs: lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit
+      
+      - name: Run bandit security check
+        run: |
+          echo "🔐 Running security checks..."
+          bandit -r week7-ci-cd/app -f json -o bandit-report.json || true
+          bandit -r week7-ci-cd/app
+      
+      - name: Upload security report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-report
+          path: bandit-report.json
+          retention-days: 30
+
+  # ============================================================
+  # DEPLOY JOB - Deployment (depends on BUILD and SECURITY)
+  # ============================================================
+  deploy:
+    name: Deploy
+    needs: [build, security]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts-${{ github.run_number }}
+          path: ${{ env.ARTIFACT_DIR }}
+      
+      - name: Verify artifacts
+        run: |
+          echo "✓ Build artifacts downloaded successfully"
+          ls -la ${{ env.ARTIFACT_DIR }}/
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Create deployment package
+        run: |
+          mkdir -p deployment
+          cp -r ${{ env.ARTIFACT_DIR }}/app deployment/
+          cp ${{ env.ARTIFACT_DIR }}/requirements.txt deployment/
+          cd deployment && tar -czf app-${{ github.run_number }}.tar.gz app/ requirements.txt
+      
+      - name: Configure deployment secrets (demonstration)
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+        run: |
+          echo "✓ Secrets safely injected into deployment process"
+          echo "Environment: $ENVIRONMENT"
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "⚠️  Warning: DEPLOY_KEY not configured"
+          else
+            echo "✓ DEPLOY_KEY configured"
+          fi
+      
+      - name: Upload deployment package
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-package-${{ github.run_number }}
+          path: deployment/app-${{ github.run_number }}.tar.gz
+          retention-days: 90
+      
+      - name: Create deployment summary
+        run: |
+          cat > deployment-summary.md << 'EOF'
+          # Deployment Summary
+          
+          - **Build Number**: ${{ github.run_number }}
+          - **Commit SHA**: ${{ github.sha }}
+          - **Branch**: ${{ github.ref }}
+          - **Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          - **Artifacts Available**: ✓
+          
+          ## Deployment Steps
+          1. ✓ Code checked out
+          2. ✓ Build artifacts downloaded
+          3. ✓ Deployment package created
+          4. ✓ Secrets safely injected
+          5. ✓ Ready for deployment
+          
+          EOF
+          cat deployment-summary.md
+      
+      - name: Upload deployment summary
+        uses: actions/upload-artifact@v3
+        with:
+          name: deployment-summary
+          path: deployment-summary.md
+
+  # ============================================================
+  # REPORT JOB - Generate workflow report
+  # ============================================================
+  report:
+    name: Generate Report
+    needs: [lint, test, build, security, deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: reports/
+      
+      - name: Generate workflow report
+        run: |
+          cat > reports/WORKFLOW_REPORT.md << 'EOF'
+          # CI/CD Workflow Report
+          
+          ## Workflow Overview
+          - **Triggered by**: ${{ github.event_name }}
+          - **Branch**: ${{ github.ref }}
+          - **Commit**: ${{ github.sha }}
+          - **Run Number**: ${{ github.run_number }}
+          - **Timestamp**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+          
+          ## Job Status
+          - **Lint**: ${{ needs.lint.result }}
+          - **Test**: ${{ needs.test.result }}
+          - **Build**: ${{ needs.build.result }}
+          - **Security**: ${{ needs.security.result }}
+          - **Deploy**: ${{ needs.deploy.result }}
+          
+          ## Key Features
+          ✓ Matrix testing (Python 3.9-3.12 × Ubuntu/Windows/macOS)
+          ✓ Artifact upload and download
+          ✓ Environment secrets management
+          ✓ Job dependencies (Build→Test→Deploy)
+          ✓ Conditional deployment (main branch only)
+          ✓ Code coverage reporting
+          ✓ Security scanning
+          
+          ## Generated Artifacts
+          - Test results (per OS and Python version)
+          - Build artifacts with coverage reports
+          - Security vulnerability reports
+          - Deployment packages
+          
+          EOF
+          cat reports/WORKFLOW_REPORT.md
+      
+      - name: Upload final report
+        uses: actions/upload-artifact@v3
+        with:
+          name: workflow-report
+          path: reports/
+
+  # ============================================================
+  # FINAL STATUS CHECK
+  # ============================================================
+  status-check:
+    name: Final Status Check
+    needs: [lint, test, build, security, deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Check workflow status
+        run: |
+          echo "=========================================="
+          echo "      CI/CD WORKFLOW FINAL STATUS         "
+          echo "=========================================="
+          echo ""
+          echo "✓ Lint Job: ${{ needs.lint.result }}"
+          echo "✓ Test Job: ${{ needs.test.result }}"
+          echo "✓ Build Job: ${{ needs.build.result }}"
+          echo "✓ Security Job: ${{ needs.security.result }}"
+          echo "✓ Deploy Job: ${{ needs.deploy.result }}"
+          echo ""
+          
+          # Check if all jobs passed
+          if [[ "${{ needs.lint.result }}" == "success" && \
+                "${{ needs.test.result }}" == "success" && \
+                "${{ needs.build.result }}" == "success" && \
+                "${{ needs.security.result }}" == "success" ]]; then
+            echo "=========================================="
+            echo "   ✅ ALL CHECKS PASSED SUCCESSFULLY! ✅   "
+            echo "=========================================="
+            exit 0
+          else
+            echo "=========================================="
+            echo "   ⚠️  SOME CHECKS FAILED - SEE ABOVE  ⚠️   "
+            echo "=========================================="
+            exit 1
+          fi

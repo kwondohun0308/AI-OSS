@@ -19,6 +19,9 @@
 ### OSS 구조 및 전략 (week 6)
 - `week6-oss-inner-source`: OSS 기본 구조 (LICENSE, README, CONTRIBUTING, CODE_OF_CONDUCT), 라이선스 비교 분석, Inner Source 도입 로드맵
 
+### CI/CD 자동화 (week 7)
+- `week7-ci-cd`: GitHub Actions CI/CD 파이프라인, Matrix 테스트 (Python 3.9-3.12 × Ubuntu/Windows/macOS), Secrets 민감정보 관리, Build→Test→Deploy 의존성
+
 ## 📄 OSS 기본 구조
 
 이 저장소는 완전한 OSS 기본 구조를 갖추고 있습니다:
@@ -93,11 +96,12 @@
 ## 📊 프로젝트 규모
 
 ```
-총 과제: 6주차
-총 문서: 30개 이상
+총 과제: 7주차
+총 문서: 35개 이상
 총 지침: 4개 (LICENSE, README, CONTRIBUTING, CODE_OF_CONDUCT)
 활성 팀: 1개 (학습 커뮤니티)
 참여 기간: 1학기 (16주)
+자동화 파이프라인: GitHub Actions
 ```
 
 ## 🚀 주요 특징
@@ -127,8 +131,9 @@ Week 3: 프로젝트 관리 (4개 문서)
 Week 4: PR 워크플로우 (4개 문서)
 Week 5: Wiki/Discussions (8개 문서)
 Week 6: OSS 기본 구조 (8개 문서)
+Week 7: CI/CD 자동화 (6개 문서 + 1개 워크플로우)
 ─────────────────────────────
-총계: 34개 이상의 산출물
+총계: 40개 이상의 산출물
 ```
 
 ## 📞 지원 및 문의
@@ -158,7 +163,8 @@ Week 6: OSS 기본 구조 (8개 문서)
 고급 (실무 적용)
 ├─ week2-dora-metrics: 개발 지표
 ├─ week3-kanban-project: 프로젝트 관리
-└─ week6-oss-inner-source/inner-source-roadmap: 조직 적용
+├─ week6-oss-inner-source/inner-source-roadmap: 조직 적용
+└─ week7-ci-cd: CI/CD 자동화 구현
 ```
 
 ## 📝 생성형 AI 사용 고지
@@ -183,4 +189,4 @@ Week 6: OSS 기본 구조 (8개 문서)
 
 **프로젝트 시작**: 2026-01-06  
 **마지막 업데이트**: 2026-04-28  
-**현재 상태**: 6주차 완료 (OSS 기본 구조 완성)
+**현재 상태**: 7주차 완료 (CI/CD 파이프라인 구축)
