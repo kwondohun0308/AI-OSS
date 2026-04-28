@@ -8,15 +8,16 @@
 - [x] SSH 공개키 존재 확인
 - [ ] GitHub 계정에 SSH 공개키 등록
 - [ ] GitHub 테스트 저장소 생성
-- [ ] 원격 저장소 연결
+- [x] 원격 저장소 연결
 - [x] 첫 커밋 생성
-- [ ] 첫 푸시 수행
+- [x] 첫 푸시 수행
 
 ## 현재 상태
 - Git: `git version 2.53.0.windows.2`
 - Git 사용자: `kwon Dohun <kdh691610@gmail.com>`
 - SSH 키: `~/.ssh/id_ed25519.pub` 존재 확인
 - 첫 커밋: `ebfef2c`
+- 첫 푸시: `ef8c4cd`
 
 ## 확인한 점
 - 로컬 환경의 Git과 SSH 키는 준비되어 있습니다.
