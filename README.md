@@ -9,6 +9,7 @@
 - `week2-dora-metrics`: DORA 지표 자동 수집, 대시보드, 주간 보고서
 - `week3-kanban-project`: Kanban 기반 GitHub Project, 이슈/라벨/마일스톤, 분석 문서
 - `week4-pr-workflow`: Feature branch 전략, Conventional Commits, PR 템플릿, CODEOWNERS, 리뷰 가이드
+- `week5-wiki-discussions`: Wiki 초안, ADR 템플릿, Discussions/RFC 운영 가이드
 
 ## 생성형 AI 사용 고지
 이 저장소의 문서들은 생성형 AI(GitHub Copilot)를 활용하여 작성되었습니다.
