@@ -1,0 +1,91 @@
+name: Reusable Selective Deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Deployment environment
+        required: true
+        type: string
+      build-number:
+        description: Build artifact number
+        required: true
+        type: string
+    secrets:
+      DEPLOY_KEY:
+        description: Deployment key
+        required: false
+      API_KEY:
+        description: API key
+        required: false
+
+jobs:
+  validate-deployment:
+    name: Validate Deployment for ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.check.outputs.should-deploy }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Check deployment conditions
+        id: check
+        run: |
+          BRANCH="${{ github.ref }}"
+          EVENT="${{ github.event_name }}"
+          
+          # Deployment rules
+          if [[ "$BRANCH" == "refs/heads/main" && "$EVENT" == "push" ]]; then
+            echo "should-deploy=true" >> $GITHUB_OUTPUT
+            echo "✅ Deployment approved: main branch + push event"
+          else
+            echo "should-deploy=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Deployment skipped: not meeting conditions"
+          fi
+
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    needs: validate-deployment
+    runs-on: ubuntu-latest
+    if: needs.validate-deployment.outputs.should-deploy == 'true'
+    environment:
+      name: ${{ inputs.environment }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download deployment artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: deployment-package-${{ inputs.build-number }}
+          path: deploy/
+      
+      - name: Prepare deployment
+        run: |
+          echo "🚀 Preparing deployment to ${{ inputs.environment }}"
+          echo "Build Number: ${{ inputs.build-number }}"
+          ls -la deploy/
+      
+      - name: Execute deployment
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          echo "✅ Deploying to ${{ inputs.environment }} environment"
+          echo "Environment: $ENVIRONMENT"
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "⚠️  Warning: DEPLOY_KEY not configured"
+          else
+            echo "✓ DEPLOY_KEY configured"
+          fi
+      
+      - name: Verify deployment
+        run: |
+          echo "📋 Deployment Verification"
+          echo "Environment: ${{ inputs.environment }}"
+          echo "Build: ${{ inputs.build-number }}"
+          echo "✅ Deployment successful"

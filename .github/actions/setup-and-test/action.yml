@@ -1,0 +1,80 @@
+name: Setup and Test
+description: Composite action for setting up Python environment and running tests with caching
+
+inputs:
+  python-version:
+    description: Python version to use
+    required: true
+  cache-enabled:
+    description: Enable pip cache
+    required: false
+    default: 'true'
+  test-path:
+    description: Path to tests directory
+    required: false
+    default: 'week7-ci-cd/tests'
+
+outputs:
+  cache-hit:
+    description: Whether cache was hit
+    value: ${{ steps.cache.outputs.cache-hit }}
+  test-duration:
+    description: Test execution duration in seconds
+    value: ${{ steps.test.outputs.duration }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: ${{ inputs.cache-enabled == 'true' && 'pip' || 'false' }}
+    
+    - name: Cache pip packages (ID tracking)
+      id: cache
+      uses: actions/cache@v3
+      if: inputs.cache-enabled == 'true'
+      with:
+        path: |
+          ~/.cache/pip
+          ${{ runner.os == 'Windows' && env.APPDATA + '\pip\Cache' || '' }}
+        key: pip-${{ runner.os }}-py${{ inputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          pip-${{ runner.os }}-py${{ inputs.python-version }}-
+          pip-${{ runner.os }}-
+    
+    - name: Install dependencies
+      shell: bash
+      run: |
+        echo "📦 Installing Python ${{ inputs.python-version }} dependencies..."
+        python -m pip install --upgrade pip
+        pip install -r week7-ci-cd/requirements.txt
+    
+    - name: Run tests with timing
+      id: test
+      shell: bash
+      run: |
+        echo "🧪 Running tests for Python ${{ inputs.python-version }}..."
+        START_TIME=$(date +%s)
+        pytest ${{ inputs.test-path }} \
+          -v \
+          --cov=week7-ci-cd/app \
+          --cov-report=xml:coverage-py${{ inputs.python-version }}.xml \
+          --cov-report=term-missing \
+          --junit-xml=test-results-py${{ inputs.python-version }}.xml \
+          --tb=short
+        END_TIME=$(date +%s)
+        DURATION=$((END_TIME - START_TIME))
+        echo "duration=$DURATION" >> $GITHUB_OUTPUT
+        echo "⏱️  Test execution took $DURATION seconds"
+
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-py${{ inputs.python-version }}-${{ runner.os }}
+        path: |
+          coverage-py${{ inputs.python-version }}.xml
+          test-results-py${{ inputs.python-version }}.xml
+        retention-days: 30

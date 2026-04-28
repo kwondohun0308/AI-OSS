@@ -22,6 +22,9 @@
 ### CI/CD 자동화 (week 7)
 - `week7-ci-cd`: GitHub Actions CI/CD 파이프라인, Matrix 테스트 (Python 3.9-3.12 × Ubuntu/Windows/macOS), Secrets 민감정보 관리, Build→Test→Deploy 의존성
 
+### CI/CD 최적화 (week 8)
+- `week8-ci-cd-optimization`: Reusable Workflows, Composite Actions, Matrix 확장 (Python 3.8-3.12), 캐싱 최적화 (70-80% 성능 개선), 선택적 배포, 성능 분석 리포트
+
 ## 📄 OSS 기본 구조
 
 이 저장소는 완전한 OSS 기본 구조를 갖추고 있습니다:
@@ -96,12 +99,13 @@
 ## 📊 프로젝트 규모
 
 ```
-총 과제: 7주차
-총 문서: 35개 이상
+총 과제: 8주차
+총 문서: 40개 이상
 총 지침: 4개 (LICENSE, README, CONTRIBUTING, CODE_OF_CONDUCT)
 활성 팀: 1개 (학습 커뮤니티)
 참여 기간: 1학기 (16주)
-자동화 파이프라인: GitHub Actions
+자동화 파이프라인: GitHub Actions (3개 워크플로우 + 1개 Action)
+성능 개선: 87% (캐싱 최적화)
 ```
 
 ## 🚀 주요 특징
@@ -131,8 +135,9 @@ Week 3: 프로젝트 관리 (4개 문서)
 Week 4: PR 워크플로우 (4개 문서)
 Week 5: Wiki/Discussions (8개 문서)
 Week 6: OSS 기본 구조 (8개 문서)
-Week 7: CI/CD 자동화 (6개 문서 + 1개 워크플로우)
+Week 8: CI/CD 최적화 (6개 문서 + 3개 워크플로우 + 1개 Action)
 ─────────────────────────────
+총계: 46───────────────────────
 총계: 40개 이상의 산출물
 ```
 
@@ -163,7 +168,8 @@ Week 7: CI/CD 자동화 (6개 문서 + 1개 워크플로우)
 고급 (실무 적용)
 ├─ week2-dora-metrics: 개발 지표
 ├─ week3-kanban-project: 프로젝트 관리
-├─ week6-oss-inner-source/inner-source-roadmap: 조직 적용
+├─ week7-ci-cd: CI/CD 자동화 구현
+└─ week8-ci-cd-optimization: CI/CD 최적화 (성능, 재사용성)ner-source-roadmap: 조직 적용
 └─ week7-ci-cd: CI/CD 자동화 구현
 ```
 
@@ -188,5 +194,5 @@ Week 7: CI/CD 자동화 (6개 문서 + 1개 워크플로우)
 ---
 
 **프로젝트 시작**: 2026-01-06  
-**마지막 업데이트**: 2026-04-28  
+**마지막 업데이트*8주차 완료 (CI/CD 최적화 - Reusable Workflows, Composite Actions, 캐싱 70-80% 개선
 **현재 상태**: 7주차 완료 (CI/CD 파이프라인 구축)

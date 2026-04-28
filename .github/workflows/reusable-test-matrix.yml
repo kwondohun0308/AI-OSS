@@ -1,0 +1,64 @@
+name: Reusable Test Matrix
+
+on:
+  workflow_call:
+    inputs:
+      test-matrix:
+        description: JSON matrix configuration
+        required: true
+        type: string
+      cache-enabled:
+        description: Enable pip caching
+        required: false
+        type: boolean
+        default: true
+      upload-artifacts:
+        description: Upload test artifacts
+        required: false
+        type: boolean
+        default: true
+    outputs:
+      total-duration:
+        description: Total test execution time
+        value: ${{ jobs.test.outputs.total-duration }}
+      cache-efficiency:
+        description: Cache hit rate
+        value: ${{ jobs.test.outputs.cache-efficiency }}
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(inputs.test-matrix) }}
+    
+    outputs:
+      total-duration: ${{ steps.summary.outputs.total-duration }}
+      cache-efficiency: ${{ steps.summary.outputs.cache-efficiency }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Use Setup and Test Action
+        id: test-action
+        uses: ./.github/actions/setup-and-test
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache-enabled: ${{ inputs.cache-enabled }}
+          test-path: week7-ci-cd/tests
+      
+      - name: Report test results
+        id: summary
+        shell: bash
+        run: |
+          echo "Test execution completed"
+          echo "Python: ${{ matrix.python-version }}"
+          echo "OS: ${{ matrix.os }}"
+          echo "Duration: ${{ steps.test-action.outputs.test-duration }}s"
+          echo "Cache hit: ${{ steps.test-action.outputs.cache-hit }}"
+          
+          # Output for aggregation
+          echo "total-duration=${{ steps.test-action.outputs.test-duration }}" >> $GITHUB_OUTPUT
+          echo "cache-efficiency=${{ steps.test-action.outputs.cache-hit }}" >> $GITHUB_OUTPUT
