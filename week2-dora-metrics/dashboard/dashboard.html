@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DORA Dashboard Preview</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --accent: #22c55e;
+      --accent2: #38bdf8;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      background: radial-gradient(circle at top, #1e293b, var(--bg));
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 40px;
+    }
+
+    .hero {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .metric-note {
+      margin: 8px 0 0;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 14px;
+    }
+
+    .chart-card {
+      background: rgba(15, 23, 42, 0.86);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 16px;
+      min-height: 320px;
+    }
+
+    .chart-title {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 260px !important;
+    }
+
+    @media (max-width: 900px) {
+      .grid, .chart-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <h1 class="title">DORA Metrics Dashboard</h1>
+      <p class="subtitle">GitHub Actions가 주간 단위로 수집한 Lead Time, Deployment Frequency, MTTR, Change Failure Rate 시안</p>
+    </div>
+
+    <section class="grid">
+      <article class="card">
+        <div class="metric-label">Lead Time</div>
+        <p class="metric-value">18.4h</p>
+        <p class="metric-note">PR 최초 커밋 → 머지</p>
+      </article>
+      <article class="card">
+        <div class="metric-label">Deployment Frequency</div>
+        <p class="metric-value">6/week</p>
+        <p class="metric-note">성공 배포 횟수</p>
+      </article>
+      <article class="card">
+        <div class="metric-label">MTTR</div>
+        <p class="metric-value">3.1h</p>
+        <p class="metric-note">Incident 등록 → 종료</p>
+      </article>
+      <article class="card">
+        <div class="metric-label">Change Failure Rate</div>
+        <p class="metric-value">8.3%</p>
+        <p class="metric-note">실패 배포 / 전체 배포</p>
+      </article>
+    </section>
+
+    <section class="chart-grid">
+      <article class="chart-card">
+        <h2 class="chart-title">최근 4주 Lead Time 추이</h2>
+        <canvas id="leadTimeChart"></canvas>
+      </article>
+      <article class="chart-card">
+        <h2 class="chart-title">배포 안정성 요약</h2>
+        <canvas id="qualityChart"></canvas>
+      </article>
+    </section>
+  </div>
+
+  <script>
+    new Chart(document.getElementById('leadTimeChart'), {
+      type: 'line',
+      data: {
+        labels: ['1주차', '2주차', '3주차', '4주차'],
+        datasets: [{
+          label: 'Lead Time (h)',
+          data: [22, 19, 16, 14],
+          borderColor: '#38bdf8',
+          backgroundColor: 'rgba(56, 189, 248, 0.16)',
+          tension: 0.35,
+          fill: true,
+        }],
+      },
+      options: {
+        plugins: { legend: { labels: { color: '#e5e7eb' } } },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.15)' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(148,163,184,0.15)' } },
+        },
+      },
+    });
+
+    new Chart(document.getElementById('qualityChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Success', 'Failed'],
+        datasets: [{
+          data: [92, 8],
+          backgroundColor: ['#22c55e', '#ef4444'],
+        }],
+      },
+      options: {
+        plugins: { legend: { labels: { color: '#e5e7eb' } } },
+      },
+    });
+  </script>
+</body>
+</html>
