@@ -38,7 +38,7 @@ runs:
       with:
         path: |
           ~/.cache/pip
-          ${{ runner.os == 'Windows' && env.APPDATA + '\pip\Cache' || '' }}
+          ${{ runner.os == 'Windows' && '~\AppData\Local\pip\Cache' || '' }}
         key: pip-${{ runner.os }}-py${{ inputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           pip-${{ runner.os }}-py${{ inputs.python-version }}-
