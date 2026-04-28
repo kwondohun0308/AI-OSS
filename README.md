@@ -1,0 +1,11 @@
+# AI-OSS Week 1
+
+이 저장소는 1주차 과제용 산출물을 모아두는 작업 공간입니다.
+
+## 폴더 구성
+- `week1-git-setup`: Git/GitHub 환경 점검 및 체크리스트
+- `week1-project-proposal`: 학기 프로젝트 제안서
+- `week1-profile-readme`: GitHub Profile README 초안
+
+## 생성형 AI 사용 고지
+이 저장소의 문서들은 생성형 AI(GitHub Copilot)를 활용하여 작성되었습니다.
