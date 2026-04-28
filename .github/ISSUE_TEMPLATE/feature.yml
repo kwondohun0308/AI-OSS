@@ -1,0 +1,27 @@
+name: Feature request
+description: 새 기능이나 개선 사항을 제안합니다.
+title: "[Feature] "
+labels:
+  - type: feature
+  - status: ready
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: 목표
+      description: 이 기능이 해결하려는 문제를 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 수용 기준
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: 참고 사항

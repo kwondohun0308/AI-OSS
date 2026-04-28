@@ -1,0 +1,36 @@
+name: Bug report
+description: 버그를 보고하고 재현 정보를 남깁니다.
+title: "[Bug] "
+labels:
+  - type: bug
+  - status: ready
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 요약
+      description: 발생한 문제를 간단히 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 단계
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대 결과
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 결과
+    validations:
+      required: true

@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project board
+    url: https://github.com/kwondohun0308/AI-OSS/projects
+    about: 칸반 보드와 백로그는 프로젝트 보드에서 관리합니다.
