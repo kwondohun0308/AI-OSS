@@ -1,0 +1,100 @@
+name: week9 Security Scan
+on:
+  schedule:
+    - cron: '0 3 * * 1'
+  push:
+    paths:
+      - 'week9/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install deps
+        run: |
+          cd week9
+          npm ci
+      - name: Run npm audit
+        id: audit
+        run: |
+          cd week9
+          npm audit --json > ../week9-audit.json || true
+          cat ../week9-audit.json
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: week9-audit
+          path: week9-audit.json
+      - name: Create issue when vulnerabilities found
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('week9-audit.json','utf8'));
+            const vulnCount = data.metadata && data.metadata.vulnerabilities ? Object.values(data.metadata.vulnerabilities).reduce((a,b)=>a+b,0) : 0;
+            if (vulnCount > 0) {
+              const body = `Automated npm audit found ${vulnCount} vulnerabilities in \`week9\`.\n\nSummary:\n\n\`\`\`json\n${JSON.stringify(data.metadata,null,2)}\n\`\`\``;
+              await github.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Security: npm audit vulnerabilities in week9',
+                body
+              });
+            } else {
+              console.log('No vulnerabilities found by npm audit.');
+            }
+
+  snyk-scan:
+    runs-on: ubuntu-latest
+    needs: npm-audit
+    if: secrets.SNYK_TOKEN != ''
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install Snyk
+        run: npm install -g snyk
+      - name: Run Snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          cd week9
+          snyk test --json > ../week9-snyk.json || true
+          cat ../week9-snyk.json
+      - name: Upload Snyk report
+        uses: actions/upload-artifact@v4
+        with:
+          name: week9-snyk
+          path: week9-snyk.json
+      - name: Create issue from Snyk report
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('week9-snyk.json','utf8'));
+            const vulnCount = data.vulnerabilities ? Object.keys(data.vulnerabilities).length : 0;
+            if (vulnCount > 0) {
+              const body = `Snyk scan found ${vulnCount} vulnerabilities in \`week9\`.\n\nSummary:\n\n\`\`\`json\n${JSON.stringify(data,null,2)}\n\`\`\``;
+              await github.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Security: Snyk vulnerabilities in week9',
+                body
+              });
+            } else {
+              console.log('No vulnerabilities found by Snyk.');
+            }

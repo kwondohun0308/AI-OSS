@@ -1,0 +1,42 @@
+name: Publish week9 NPM package
+on:
+  push:
+    paths:
+      - 'week9/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://npm.pkg.github.com/
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+          echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com/" >> ~/.npmrc
+      - name: Publish package
+        working-directory: week9
+        run: |
+          npm ci
+          npm publish --registry=https://npm.pkg.github.com/ --access=public
+      - name: Bump patch version and push tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          cd week9
+          npm version patch -m "chore(release): %s"
+          cd ..
+          git add week9/package.json
+          git commit -m "chore(release): bump week9 package version" || echo "no changes to commit"
+          git push --follow-tags

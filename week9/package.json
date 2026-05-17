@@ -1,0 +1,13 @@
+{
+  "name": "@kwondohun0308/week9-sample",
+  "version": "1.0.0",
+  "description": "Week9 sample npm package",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node -e \"console.log('ok')\""
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}

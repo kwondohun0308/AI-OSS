@@ -1,0 +1,32 @@
+name: Build and push week9 Docker image
+on:
+  push:
+    paths:
+      - 'week9/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./week9
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/week9-sample:${{ github.sha }}
+      - name: Run container and verify
+        run: |
+          docker run -d --name week9_test -p 3000:3000 ghcr.io/${{ github.repository_owner }}/week9-sample:${{ github.sha }}
+          sleep 3
+          curl --fail http://localhost:3000/
+          docker rm -f week9_test
