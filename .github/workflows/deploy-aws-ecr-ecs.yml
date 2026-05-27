@@ -29,6 +29,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build Docker image and push to ECR
+        id: build-image
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -49,7 +50,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
           echo "Registering new task definition based on template"
-          IMAGE=${{ steps.build-and-deploy.outputs.image }}
+          IMAGE=${{ steps.build-image.outputs.image }}
           # Replace placeholder in template with built image
           jq --arg img "${IMAGE}" '.containerDefinitions[0].image = $img' ${TASK_DEF_TEMPLATE} > taskdef.json
           aws ecs register-task-definition --cli-input-json file://taskdef.json > register-output.json

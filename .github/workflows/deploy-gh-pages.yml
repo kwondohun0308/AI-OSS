@@ -35,13 +35,14 @@ jobs:
           git init
           git add .
           git commit -m "Deploy docs to gh-pages (push)"
-          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" master:gh-pages
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" HEAD:gh-pages
 
       - name: Create PR preview (pull_request)
         if: github.event_name == 'pull_request'
         env:
           PR_NUM: ${{ github.event.number }}
           REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Preparing preview for PR #${PR_NUM}"
           git config user.name "github-actions[bot]"
