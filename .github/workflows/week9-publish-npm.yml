@@ -30,5 +30,6 @@ jobs:
         working-directory: week9
         run: |
           npm install
-          echo "Publishing version $(node -p \"require('./package.json').version\")"
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Publishing version $VERSION"
           npm publish --registry=https://npm.pkg.github.com/ --access=public
