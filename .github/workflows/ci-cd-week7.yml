@@ -92,7 +92,7 @@ jobs:
           pytest week7-ci-cd/tests -v --cov=week7-ci-cd/app --cov-report=xml:coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml --junit-xml=test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
       
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v6
         with:
           files: coverage-${{ matrix.os }}-${{ matrix.python-version }}.xml
           flags: unittests
