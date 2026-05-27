@@ -4,17 +4,34 @@ updates:
     directory: "/week9"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "Asia/Seoul"
     open-pull-requests-limit: 5
     rebase-strategy: "auto"
     labels:
       - "dependencies"
-    automerged_updates:
-      - match:
-          update_type: "version-update:semver-patch"
+    groups:
+      week9-npm-patch-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "03:30"
+      timezone: "Asia/Seoul"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
+    groups:
+      github-actions-patch-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+          - "minor"

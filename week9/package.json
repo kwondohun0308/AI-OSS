@@ -1,6 +1,6 @@
 {
   "name": "@kwondohun0308/week9-sample",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Week9 sample npm package",
   "main": "index.js",
   "scripts": {

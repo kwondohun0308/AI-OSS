@@ -1,6 +1,8 @@
 name: Publish week9 NPM package
 on:
   push:
+    branches:
+      - main
     paths:
       - 'week9/**'
   workflow_dispatch: {}
@@ -11,9 +13,12 @@ permissions:
 
 jobs:
   publish:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -23,20 +28,25 @@ jobs:
         run: |
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
           echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com/" >> ~/.npmrc
-      - name: Publish package
-        working-directory: week9
+      - name: Bump patch version
+        id: bump
         run: |
-          npm ci
-          npm publish --registry=https://npm.pkg.github.com/ --access=public
-      - name: Bump patch version and push tag
+          cd week9
+          npm version patch --no-git-tag-version
+          echo "version=$(node -p \"require('./package.json').version\")" >> $GITHUB_OUTPUT
+      - name: Commit and tag release version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.bump.outputs.version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          cd week9
-          npm version patch -m "chore(release): %s"
-          cd ..
-          git add week9/package.json
-          git commit -m "chore(release): bump week9 package version" || echo "no changes to commit"
-          git push --follow-tags
+          git add week9/package.json week9/package-lock.json
+          git commit -m "chore(release): week9 v${VERSION}" || echo "no changes to commit"
+          git tag "week9-v${VERSION}"
+          git push
+          git push --tags
+      - name: Publish bumped package
+        working-directory: week9
+        run: |
+          npm install
+          npm publish --registry=https://npm.pkg.github.com/ --access=public

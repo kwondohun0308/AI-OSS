@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '0 3 * * 1'
   push:
+    branches:
+      - main
     paths:
       - 'week9/**'
   workflow_dispatch: {}
@@ -23,19 +25,43 @@ jobs:
       - name: Install deps
         run: |
           cd week9
-          npm ci
+          npm install
       - name: Run npm audit
         id: audit
         run: |
           cd week9
           npm audit --json > ../week9-audit.json || true
-          cat ../week9-audit.json
+      - name: Build npm audit markdown summary
+        id: audit_summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('week9-audit.json', 'utf8'));
+            const m = data.metadata?.vulnerabilities || {};
+            const total = Object.values(m).reduce((acc, n) => acc + n, 0);
+            const summary = [
+              '## week9 npm audit summary',
+              '',
+              `- total: ${total}`,
+              `- critical: ${m.critical || 0}`,
+              `- high: ${m.high || 0}`,
+              `- moderate: ${m.moderate || 0}`,
+              `- low: ${m.low || 0}`,
+              ''
+            ].join('\n');
+            fs.writeFileSync('week9-audit-summary.md', summary);
+            core.setOutput('total', String(total));
+            core.summary.addRaw(summary).write();
       - name: Upload audit report
         uses: actions/upload-artifact@v4
         with:
           name: week9-audit
-          path: week9-audit.json
+          path: |
+            week9-audit.json
+            week9-audit-summary.md
       - name: Create issue when vulnerabilities found
+        if: steps.audit_summary.outputs.total != '0'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -43,58 +69,119 @@ jobs:
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('week9-audit.json','utf8'));
             const vulnCount = data.metadata && data.metadata.vulnerabilities ? Object.values(data.metadata.vulnerabilities).reduce((a,b)=>a+b,0) : 0;
-            if (vulnCount > 0) {
-              const body = `Automated npm audit found ${vulnCount} vulnerabilities in \`week9\`.\n\nSummary:\n\n\`\`\`json\n${JSON.stringify(data.metadata,null,2)}\n\`\`\``;
-              await github.issues.create({
+            const title = 'Security Report: week9 npm audit vulnerabilities';
+            const body = `Automated npm audit found ${vulnCount} vulnerabilities in week9.\n\nSummary:\n\n\`\`\`json\n${JSON.stringify(data.metadata,null,2)}\n\`\`\``;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+            const existing = issues.find((i) => i.title === title);
+            if (existing) {
+              await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: 'Security: npm audit vulnerabilities in week9',
+                issue_number: existing.number,
                 body
               });
             } else {
-              console.log('No vulnerabilities found by npm audit.');
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body
+              });
             }
 
   snyk-scan:
     runs-on: ubuntu-latest
     needs: npm-audit
-    if: secrets.SNYK_TOKEN != ''
+    env:
+      SNYK_TOKEN: ${{ secrets[format('SNYK_TOKEN')] }}
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
+      - name: Check Snyk token
+        id: snyk_token
+        run: |
+          if [ -n "$SNYK_TOKEN" ]; then
+            echo "has_token=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_token=false" >> $GITHUB_OUTPUT
+          fi
       - name: Install Snyk
+        if: steps.snyk_token.outputs.has_token == 'true'
         run: npm install -g snyk
       - name: Run Snyk test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        if: steps.snyk_token.outputs.has_token == 'true'
         run: |
           cd week9
           snyk test --json > ../week9-snyk.json || true
-          cat ../week9-snyk.json
+      - name: Build Snyk markdown summary
+        if: steps.snyk_token.outputs.has_token == 'true'
+        id: snyk_summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('week9-snyk.json', 'utf8'));
+            const vulnerabilities = Array.isArray(data.vulnerabilities)
+              ? data.vulnerabilities.length
+              : (data.vulnerabilities ? Object.keys(data.vulnerabilities).length : 0);
+            const summary = [
+              '## week9 Snyk summary',
+              '',
+              `- vulnerabilities: ${vulnerabilities}`,
+              `- ok: ${data.ok === true}`,
+              ''
+            ].join('\n');
+            fs.writeFileSync('week9-snyk-summary.md', summary);
+            core.setOutput('total', String(vulnerabilities));
+            core.summary.addRaw(summary).write();
       - name: Upload Snyk report
+        if: steps.snyk_token.outputs.has_token == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: week9-snyk
-          path: week9-snyk.json
+          path: |
+            week9-snyk.json
+            week9-snyk-summary.md
       - name: Create issue from Snyk report
+        if: steps.snyk_token.outputs.has_token == 'true' && steps.snyk_summary.outputs.total != '0'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const data = JSON.parse(fs.readFileSync('week9-snyk.json','utf8'));
-            const vulnCount = data.vulnerabilities ? Object.keys(data.vulnerabilities).length : 0;
-            if (vulnCount > 0) {
-              const body = `Snyk scan found ${vulnCount} vulnerabilities in \`week9\`.\n\nSummary:\n\n\`\`\`json\n${JSON.stringify(data,null,2)}\n\`\`\``;
-              await github.issues.create({
+            const vulnCount = Array.isArray(data.vulnerabilities)
+              ? data.vulnerabilities.length
+              : (data.vulnerabilities ? Object.keys(data.vulnerabilities).length : 0);
+            const title = 'Security Report: week9 Snyk vulnerabilities';
+            const body = `Snyk scan found ${vulnCount} vulnerabilities in week9.\n\nSummary:\n\n\`\`\`json\n${JSON.stringify(data,null,2)}\n\`\`\``;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+            const existing = issues.find((i) => i.title === title);
+            if (existing) {
+              await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                title: 'Security: Snyk vulnerabilities in week9',
+                issue_number: existing.number,
                 body
               });
             } else {
-              console.log('No vulnerabilities found by Snyk.');
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body
+              });
             }
