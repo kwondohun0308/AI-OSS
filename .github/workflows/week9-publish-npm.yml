@@ -22,12 +22,11 @@ jobs:
         with:
           node-version: 18
           registry-url: https://npm.pkg.github.com/
-      - name: Configure npm for GitHub Packages
-        run: |
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
-          echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com/" >> ~/.npmrc
+          scope: '@${{ github.repository_owner }}'
       - name: Publish bumped package
         working-directory: week9
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
         run: |
           npm install
           VERSION=$(node -p "require('./package.json').version")

@@ -3,6 +3,11 @@
   "version": "1.0.1",
   "description": "Week9 sample npm package",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kwondohun0308/AI-OSS.git",
+    "directory": "week9"
+  },
   "scripts": {
     "start": "node index.js",
     "test": "node -e \"console.log('ok')\""
