@@ -1,0 +1,15 @@
+{
+  "name": "@kwondohun0308/week11-release-strategy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Week11 feature flags, A/B tests, and canary rollout sample",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "demo": "node simulate.js",
+    "validate": "node simulate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
