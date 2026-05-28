@@ -1,0 +1,84 @@
+name: Week12 Testing Lab CI
+
+on:
+  push:
+    branches:
+      - main
+      - chore/week12-tests
+    paths:
+      - 'week12/**'
+      - '.github/workflows/week12-ci.yml'
+  pull_request:
+    paths:
+      - 'week12/**'
+      - '.github/workflows/week12-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    name: Jest Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: week12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: week12/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm test
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: week12-coverage
+          path: week12/coverage/
+          retention-days: 14
+
+  e2e-tests:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    defaults:
+      run:
+        working-directory: week12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: week12/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - name: Upload screenshot and trace artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: week12-playwright-artifacts
+          path: |
+            week12/test-results/
+            week12/playwright-report/
+          retention-days: 14
