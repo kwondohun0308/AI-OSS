@@ -1,0 +1,35 @@
+{
+  "name": "@kwondohun0308/week13-experiment-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Week13 user-scenario experiment lab with personas, feature-flag A/B testing, and GitHub automation",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "simulate": "node simulate.js",
+    "report": "node simulate.js --write-report",
+    "test": "jest --coverage",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.2",
+    "jest": "^30.0.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  }
+}

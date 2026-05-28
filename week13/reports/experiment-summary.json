@@ -1,0 +1,839 @@
+{
+  "experimentKey": "homepage-cta",
+  "featureFlag": {
+    "enabled": true,
+    "targetUsers": [],
+    "rollout": 50
+  },
+  "rollouts": [
+    20,
+    60
+  ],
+  "personas": [
+    {
+      "id": "analyst-amy",
+      "name": "Amy",
+      "archetype": "Data Analyst",
+      "goal": "Get a reliable dashboard fast",
+      "friction": "Needs clear labels and predictable actions",
+      "bias": {
+        "activation": 0.06,
+        "satisfaction": 0.35,
+        "retention": 0.05,
+        "tickets": -0.05
+      }
+    },
+    {
+      "id": "founder-felix",
+      "name": "Felix",
+      "archetype": "Startup Founder",
+      "goal": "Move quickly without extra meetings",
+      "friction": "Skips long setup steps",
+      "bias": {
+        "activation": 0.08,
+        "satisfaction": 0.25,
+        "retention": 0.08,
+        "tickets": -0.02
+      }
+    },
+    {
+      "id": "ops-olivia",
+      "name": "Olivia",
+      "archetype": "Operations Manager",
+      "goal": "Reduce repetitive manual work",
+      "friction": "Sensitive to unstable workflows",
+      "bias": {
+        "activation": 0.04,
+        "satisfaction": 0.3,
+        "retention": 0.06,
+        "tickets": -0.04
+      }
+    },
+    {
+      "id": "support-sam",
+      "name": "Sam",
+      "archetype": "Support Lead",
+      "goal": "Spot customer issues earlier",
+      "friction": "Needs concrete proof before adopting change",
+      "bias": {
+        "activation": 0.02,
+        "satisfaction": 0.18,
+        "retention": 0.04,
+        "tickets": -0.06
+      }
+    },
+    {
+      "id": "security-sara",
+      "name": "Sara",
+      "archetype": "Security Reviewer",
+      "goal": "Avoid hidden changes and surprises",
+      "friction": "Will reject anything opaque",
+      "bias": {
+        "activation": -0.02,
+        "satisfaction": 0.05,
+        "retention": 0.01,
+        "tickets": 0.02
+      }
+    },
+    {
+      "id": "marketing-mina",
+      "name": "Mina",
+      "archetype": "Growth Marketer",
+      "goal": "Ship experiments with measurable lift",
+      "friction": "Wants quick readouts and shareable summaries",
+      "bias": {
+        "activation": 0.1,
+        "satisfaction": 0.4,
+        "retention": 0.08,
+        "tickets": -0.08
+      }
+    },
+    {
+      "id": "pm-peter",
+      "name": "Peter",
+      "archetype": "Product Manager",
+      "goal": "Align product decisions with signals",
+      "friction": "Needs evidence, not vibes",
+      "bias": {
+        "activation": 0.05,
+        "satisfaction": 0.28,
+        "retention": 0.06,
+        "tickets": -0.03
+      }
+    },
+    {
+      "id": "mobile-maya",
+      "name": "Maya",
+      "archetype": "Mobile Power User",
+      "goal": "Get value from a small screen",
+      "friction": "Drops off if the UI is cluttered",
+      "bias": {
+        "activation": 0.07,
+        "satisfaction": 0.32,
+        "retention": 0.09,
+        "tickets": -0.05
+      }
+    },
+    {
+      "id": "novice-noah",
+      "name": "Noah",
+      "archetype": "New User",
+      "goal": "Understand the product quickly",
+      "friction": "Needs guidance and safe defaults",
+      "bias": {
+        "activation": 0.03,
+        "satisfaction": 0.2,
+        "retention": 0.07,
+        "tickets": -0.02
+      }
+    },
+    {
+      "id": "finance-fiona",
+      "name": "Fiona",
+      "archetype": "Finance Owner",
+      "goal": "Keep spend and risk low",
+      "friction": "Sensitive to complexity and unclear ROI",
+      "bias": {
+        "activation": 0.01,
+        "satisfaction": 0.14,
+        "retention": 0.03,
+        "tickets": 0
+      }
+    }
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "rollout": 20,
+      "feedback": [
+        {
+          "personaId": "analyst-amy",
+          "personaName": "Amy",
+          "archetype": "Data Analyst",
+          "goal": "Get a reliable dashboard fast",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5652,
+          "satisfaction": 3.5336000000000003,
+          "retention": 0.6204000000000001,
+          "supportTickets": 0.3028,
+          "tone": "mixed",
+          "comment": "Week 1: Amy saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "founder-felix",
+          "personaName": "Felix",
+          "archetype": "Startup Founder",
+          "goal": "Move quickly without extra meetings",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5366,
+          "satisfaction": 3.5128,
+          "retention": 0.63,
+          "supportTickets": 0.24879999999999997,
+          "tone": "mixed",
+          "comment": "Week 1: Felix saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "ops-olivia",
+          "personaName": "Olivia",
+          "archetype": "Operations Manager",
+          "goal": "Reduce repetitive manual work",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5332,
+          "satisfaction": 3.4748,
+          "retention": 0.6124,
+          "supportTickets": 0.20240000000000002,
+          "tone": "mixed",
+          "comment": "Week 1: Olivia saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "support-sam",
+          "personaName": "Sam",
+          "archetype": "Support Lead",
+          "goal": "Spot customer issues earlier",
+          "week": 1,
+          "variant": "treatment",
+          "active": false,
+          "activation": 0.4742,
+          "satisfaction": 3.4208000000000003,
+          "retention": 0.5714000000000001,
+          "supportTickets": 0.198,
+          "tone": "mixed",
+          "comment": "Week 1: Sam saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "security-sara",
+          "personaName": "Sara",
+          "archetype": "Security Reviewer",
+          "goal": "Avoid hidden changes and surprises",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.43599999999999994,
+          "satisfaction": 3.1544,
+          "retention": 0.5474000000000001,
+          "supportTickets": 0.3776,
+          "tone": "negative",
+          "comment": "Week 1: Sara flagged friction and would prefer a pivot before scale-up."
+        },
+        {
+          "personaId": "marketing-mina",
+          "personaName": "Mina",
+          "archetype": "Growth Marketer",
+          "goal": "Ship experiments with measurable lift",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5638,
+          "satisfaction": 3.5088,
+          "retention": 0.645,
+          "supportTickets": 0.26199999999999996,
+          "tone": "mixed",
+          "comment": "Week 1: Mina saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "pm-peter",
+          "personaName": "Peter",
+          "archetype": "Product Manager",
+          "goal": "Align product decisions with signals",
+          "week": 1,
+          "variant": "treatment",
+          "active": false,
+          "activation": 0.5402,
+          "satisfaction": 3.4987999999999997,
+          "retention": 0.6022000000000001,
+          "supportTickets": 0.312,
+          "tone": "mixed",
+          "comment": "Week 1: Peter saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "mobile-maya",
+          "personaName": "Maya",
+          "archetype": "Mobile Power User",
+          "goal": "Get value from a small screen",
+          "week": 1,
+          "variant": "treatment",
+          "active": false,
+          "activation": 0.562,
+          "satisfaction": 3.3672,
+          "retention": 0.6646,
+          "supportTickets": 0.2824,
+          "tone": "mixed",
+          "comment": "Week 1: Maya saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "novice-noah",
+          "personaName": "Noah",
+          "archetype": "New User",
+          "goal": "Understand the product quickly",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5034,
+          "satisfaction": 3.2868000000000004,
+          "retention": 0.6206000000000002,
+          "supportTickets": 0.23199999999999998,
+          "tone": "mixed",
+          "comment": "Week 1: Noah saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "finance-fiona",
+          "personaName": "Fiona",
+          "archetype": "Finance Owner",
+          "goal": "Keep spend and risk low",
+          "week": 1,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5085999999999999,
+          "satisfaction": 3.4160000000000004,
+          "retention": 0.5890000000000001,
+          "supportTickets": 0.3516,
+          "tone": "mixed",
+          "comment": "Week 1: Fiona saw value but asked for one more guardrail before rollout."
+        }
+      ],
+      "summary": {
+        "control": {
+          "count": 7,
+          "activation": 0.521,
+          "satisfaction": 3.412,
+          "retention": 0.609,
+          "supportTickets": 0.282
+        },
+        "treatment": {
+          "count": 3,
+          "activation": 0.525,
+          "satisfaction": 3.429,
+          "retention": 0.613,
+          "supportTickets": 0.264
+        },
+        "lift": {
+          "activation": 0.004,
+          "satisfaction": 0.017,
+          "retention": 0.004,
+          "supportTickets": -0.018
+        }
+      }
+    },
+    {
+      "week": 2,
+      "rollout": 60,
+      "feedback": [
+        {
+          "personaId": "analyst-amy",
+          "personaName": "Amy",
+          "archetype": "Data Analyst",
+          "goal": "Get a reliable dashboard fast",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.549,
+          "satisfaction": 3.6260000000000003,
+          "retention": 0.5766000000000001,
+          "supportTickets": 0.1948,
+          "tone": "mixed",
+          "comment": "Week 2: Amy saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "founder-felix",
+          "personaName": "Felix",
+          "archetype": "Startup Founder",
+          "goal": "Move quickly without extra meetings",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5803999999999999,
+          "satisfaction": 3.306,
+          "retention": 0.6432,
+          "supportTickets": 0.30279999999999996,
+          "tone": "mixed",
+          "comment": "Week 2: Felix saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "ops-olivia",
+          "personaName": "Olivia",
+          "archetype": "Operations Manager",
+          "goal": "Reduce repetitive manual work",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5482,
+          "satisfaction": 3.2723999999999998,
+          "retention": 0.6310000000000001,
+          "supportTickets": 0.23720000000000002,
+          "tone": "mixed",
+          "comment": "Week 2: Olivia saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "support-sam",
+          "personaName": "Sam",
+          "archetype": "Support Lead",
+          "goal": "Spot customer issues earlier",
+          "week": 2,
+          "variant": "treatment",
+          "active": true,
+          "activation": 0.5804,
+          "satisfaction": 3.7752000000000003,
+          "retention": 0.6584000000000001,
+          "supportTickets": 0.1108,
+          "tone": "mixed",
+          "comment": "Week 2: Sam saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "security-sara",
+          "personaName": "Sara",
+          "archetype": "Security Reviewer",
+          "goal": "Avoid hidden changes and surprises",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.4342,
+          "satisfaction": 3.1632,
+          "retention": 0.5804,
+          "supportTickets": 0.34040000000000004,
+          "tone": "negative",
+          "comment": "Week 2: Sara flagged friction and would prefer a pivot before scale-up."
+        },
+        {
+          "personaId": "marketing-mina",
+          "personaName": "Mina",
+          "archetype": "Growth Marketer",
+          "goal": "Ship experiments with measurable lift",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5554,
+          "satisfaction": 3.4824,
+          "retention": 0.6312,
+          "supportTickets": 0.25839999999999996,
+          "tone": "mixed",
+          "comment": "Week 2: Mina saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "pm-peter",
+          "personaName": "Peter",
+          "archetype": "Product Manager",
+          "goal": "Align product decisions with signals",
+          "week": 2,
+          "variant": "treatment",
+          "active": false,
+          "activation": 0.5378000000000001,
+          "satisfaction": 3.358,
+          "retention": 0.5986000000000001,
+          "supportTickets": 0.29040000000000005,
+          "tone": "mixed",
+          "comment": "Week 2: Peter saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "mobile-maya",
+          "personaName": "Maya",
+          "archetype": "Mobile Power User",
+          "goal": "Get value from a small screen",
+          "week": 2,
+          "variant": "treatment",
+          "active": true,
+          "activation": 0.6436000000000001,
+          "satisfaction": 3.8932,
+          "retention": 0.6970000000000001,
+          "supportTickets": 0.2264,
+          "tone": "mixed",
+          "comment": "Week 2: Maya saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "novice-noah",
+          "personaName": "Noah",
+          "archetype": "New User",
+          "goal": "Understand the product quickly",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.5088,
+          "satisfaction": 3.4144,
+          "retention": 0.6224000000000001,
+          "supportTickets": 0.2764,
+          "tone": "mixed",
+          "comment": "Week 2: Noah saw value but asked for one more guardrail before rollout."
+        },
+        {
+          "personaId": "finance-fiona",
+          "personaName": "Fiona",
+          "archetype": "Finance Owner",
+          "goal": "Keep spend and risk low",
+          "week": 2,
+          "variant": "control",
+          "active": false,
+          "activation": 0.46299999999999997,
+          "satisfaction": 3.2840000000000003,
+          "retention": 0.5800000000000001,
+          "supportTickets": 0.31079999999999997,
+          "tone": "mixed",
+          "comment": "Week 2: Fiona saw value but asked for one more guardrail before rollout."
+        }
+      ],
+      "summary": {
+        "control": {
+          "count": 7,
+          "activation": 0.52,
+          "satisfaction": 3.364,
+          "retention": 0.609,
+          "supportTickets": 0.274
+        },
+        "treatment": {
+          "count": 3,
+          "activation": 0.587,
+          "satisfaction": 3.675,
+          "retention": 0.651,
+          "supportTickets": 0.209
+        },
+        "lift": {
+          "activation": 0.067,
+          "satisfaction": 0.311,
+          "retention": 0.042,
+          "supportTickets": -0.065
+        }
+      }
+    }
+  ],
+  "feedback": [
+    {
+      "personaId": "analyst-amy",
+      "personaName": "Amy",
+      "archetype": "Data Analyst",
+      "goal": "Get a reliable dashboard fast",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5652,
+      "satisfaction": 3.5336000000000003,
+      "retention": 0.6204000000000001,
+      "supportTickets": 0.3028,
+      "tone": "mixed",
+      "comment": "Week 1: Amy saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "founder-felix",
+      "personaName": "Felix",
+      "archetype": "Startup Founder",
+      "goal": "Move quickly without extra meetings",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5366,
+      "satisfaction": 3.5128,
+      "retention": 0.63,
+      "supportTickets": 0.24879999999999997,
+      "tone": "mixed",
+      "comment": "Week 1: Felix saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "ops-olivia",
+      "personaName": "Olivia",
+      "archetype": "Operations Manager",
+      "goal": "Reduce repetitive manual work",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5332,
+      "satisfaction": 3.4748,
+      "retention": 0.6124,
+      "supportTickets": 0.20240000000000002,
+      "tone": "mixed",
+      "comment": "Week 1: Olivia saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "support-sam",
+      "personaName": "Sam",
+      "archetype": "Support Lead",
+      "goal": "Spot customer issues earlier",
+      "week": 1,
+      "variant": "treatment",
+      "active": false,
+      "activation": 0.4742,
+      "satisfaction": 3.4208000000000003,
+      "retention": 0.5714000000000001,
+      "supportTickets": 0.198,
+      "tone": "mixed",
+      "comment": "Week 1: Sam saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "security-sara",
+      "personaName": "Sara",
+      "archetype": "Security Reviewer",
+      "goal": "Avoid hidden changes and surprises",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.43599999999999994,
+      "satisfaction": 3.1544,
+      "retention": 0.5474000000000001,
+      "supportTickets": 0.3776,
+      "tone": "negative",
+      "comment": "Week 1: Sara flagged friction and would prefer a pivot before scale-up."
+    },
+    {
+      "personaId": "marketing-mina",
+      "personaName": "Mina",
+      "archetype": "Growth Marketer",
+      "goal": "Ship experiments with measurable lift",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5638,
+      "satisfaction": 3.5088,
+      "retention": 0.645,
+      "supportTickets": 0.26199999999999996,
+      "tone": "mixed",
+      "comment": "Week 1: Mina saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "pm-peter",
+      "personaName": "Peter",
+      "archetype": "Product Manager",
+      "goal": "Align product decisions with signals",
+      "week": 1,
+      "variant": "treatment",
+      "active": false,
+      "activation": 0.5402,
+      "satisfaction": 3.4987999999999997,
+      "retention": 0.6022000000000001,
+      "supportTickets": 0.312,
+      "tone": "mixed",
+      "comment": "Week 1: Peter saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "mobile-maya",
+      "personaName": "Maya",
+      "archetype": "Mobile Power User",
+      "goal": "Get value from a small screen",
+      "week": 1,
+      "variant": "treatment",
+      "active": false,
+      "activation": 0.562,
+      "satisfaction": 3.3672,
+      "retention": 0.6646,
+      "supportTickets": 0.2824,
+      "tone": "mixed",
+      "comment": "Week 1: Maya saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "novice-noah",
+      "personaName": "Noah",
+      "archetype": "New User",
+      "goal": "Understand the product quickly",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5034,
+      "satisfaction": 3.2868000000000004,
+      "retention": 0.6206000000000002,
+      "supportTickets": 0.23199999999999998,
+      "tone": "mixed",
+      "comment": "Week 1: Noah saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "finance-fiona",
+      "personaName": "Fiona",
+      "archetype": "Finance Owner",
+      "goal": "Keep spend and risk low",
+      "week": 1,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5085999999999999,
+      "satisfaction": 3.4160000000000004,
+      "retention": 0.5890000000000001,
+      "supportTickets": 0.3516,
+      "tone": "mixed",
+      "comment": "Week 1: Fiona saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "analyst-amy",
+      "personaName": "Amy",
+      "archetype": "Data Analyst",
+      "goal": "Get a reliable dashboard fast",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.549,
+      "satisfaction": 3.6260000000000003,
+      "retention": 0.5766000000000001,
+      "supportTickets": 0.1948,
+      "tone": "mixed",
+      "comment": "Week 2: Amy saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "founder-felix",
+      "personaName": "Felix",
+      "archetype": "Startup Founder",
+      "goal": "Move quickly without extra meetings",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5803999999999999,
+      "satisfaction": 3.306,
+      "retention": 0.6432,
+      "supportTickets": 0.30279999999999996,
+      "tone": "mixed",
+      "comment": "Week 2: Felix saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "ops-olivia",
+      "personaName": "Olivia",
+      "archetype": "Operations Manager",
+      "goal": "Reduce repetitive manual work",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5482,
+      "satisfaction": 3.2723999999999998,
+      "retention": 0.6310000000000001,
+      "supportTickets": 0.23720000000000002,
+      "tone": "mixed",
+      "comment": "Week 2: Olivia saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "support-sam",
+      "personaName": "Sam",
+      "archetype": "Support Lead",
+      "goal": "Spot customer issues earlier",
+      "week": 2,
+      "variant": "treatment",
+      "active": true,
+      "activation": 0.5804,
+      "satisfaction": 3.7752000000000003,
+      "retention": 0.6584000000000001,
+      "supportTickets": 0.1108,
+      "tone": "mixed",
+      "comment": "Week 2: Sam saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "security-sara",
+      "personaName": "Sara",
+      "archetype": "Security Reviewer",
+      "goal": "Avoid hidden changes and surprises",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.4342,
+      "satisfaction": 3.1632,
+      "retention": 0.5804,
+      "supportTickets": 0.34040000000000004,
+      "tone": "negative",
+      "comment": "Week 2: Sara flagged friction and would prefer a pivot before scale-up."
+    },
+    {
+      "personaId": "marketing-mina",
+      "personaName": "Mina",
+      "archetype": "Growth Marketer",
+      "goal": "Ship experiments with measurable lift",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5554,
+      "satisfaction": 3.4824,
+      "retention": 0.6312,
+      "supportTickets": 0.25839999999999996,
+      "tone": "mixed",
+      "comment": "Week 2: Mina saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "pm-peter",
+      "personaName": "Peter",
+      "archetype": "Product Manager",
+      "goal": "Align product decisions with signals",
+      "week": 2,
+      "variant": "treatment",
+      "active": false,
+      "activation": 0.5378000000000001,
+      "satisfaction": 3.358,
+      "retention": 0.5986000000000001,
+      "supportTickets": 0.29040000000000005,
+      "tone": "mixed",
+      "comment": "Week 2: Peter saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "mobile-maya",
+      "personaName": "Maya",
+      "archetype": "Mobile Power User",
+      "goal": "Get value from a small screen",
+      "week": 2,
+      "variant": "treatment",
+      "active": true,
+      "activation": 0.6436000000000001,
+      "satisfaction": 3.8932,
+      "retention": 0.6970000000000001,
+      "supportTickets": 0.2264,
+      "tone": "mixed",
+      "comment": "Week 2: Maya saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "novice-noah",
+      "personaName": "Noah",
+      "archetype": "New User",
+      "goal": "Understand the product quickly",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.5088,
+      "satisfaction": 3.4144,
+      "retention": 0.6224000000000001,
+      "supportTickets": 0.2764,
+      "tone": "mixed",
+      "comment": "Week 2: Noah saw value but asked for one more guardrail before rollout."
+    },
+    {
+      "personaId": "finance-fiona",
+      "personaName": "Fiona",
+      "archetype": "Finance Owner",
+      "goal": "Keep spend and risk low",
+      "week": 2,
+      "variant": "control",
+      "active": false,
+      "activation": 0.46299999999999997,
+      "satisfaction": 3.2840000000000003,
+      "retention": 0.5800000000000001,
+      "supportTickets": 0.31079999999999997,
+      "tone": "mixed",
+      "comment": "Week 2: Fiona saw value but asked for one more guardrail before rollout."
+    }
+  ],
+  "summary": {
+    "control": {
+      "count": 14,
+      "activation": 0.52,
+      "satisfaction": 3.388,
+      "retention": 0.609,
+      "supportTickets": 0.278
+    },
+    "treatment": {
+      "count": 6,
+      "activation": 0.556,
+      "satisfaction": 3.552,
+      "retention": 0.632,
+      "supportTickets": 0.237
+    },
+    "lift": {
+      "activation": 0.036,
+      "satisfaction": 0.164,
+      "retention": 0.023,
+      "supportTickets": -0.041
+    }
+  },
+  "decision": {
+    "decision": "Persevere",
+    "rationale": [
+      "Satisfaction lift cleared the threshold.",
+      "Activation lift cleared the threshold.",
+      "Support tickets stayed under the allowed delta."
+    ]
+  },
+  "thresholds": {
+    "minSatisfactionLift": 0.15,
+    "minActivationLift": 0.03,
+    "maxTicketDelta": 0.05
+  }
+}
