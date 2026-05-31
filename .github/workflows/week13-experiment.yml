@@ -45,7 +45,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: week13-coverage
           path: week13/coverage/
@@ -76,7 +76,7 @@ jobs:
         run: npm run report
 
       - name: Upload weekly report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: week13-weekly-report
           path: |
@@ -113,7 +113,7 @@ jobs:
 
       - name: Upload failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: week13-playwright-artifacts
           path: |

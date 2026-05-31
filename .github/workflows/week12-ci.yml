@@ -40,7 +40,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: week12-coverage
           path: week12/coverage/
@@ -75,7 +75,7 @@ jobs:
 
       - name: Upload screenshot and trace artifacts on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: week12-playwright-artifacts
           path: |

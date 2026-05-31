@@ -30,13 +30,13 @@ jobs:
         run: node week2-dora-metrics/scripts/generate-weekly-report.mjs week2-dora-metrics/artifacts/dora-metrics.json
 
       - name: Upload JSON artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dora-metrics-json
           path: week2-dora-metrics/artifacts/dora-metrics.json
 
       - name: Upload weekly report artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dora-weekly-report
           path: week2-dora-metrics/reports/weekly-report.md
