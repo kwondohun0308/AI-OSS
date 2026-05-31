@@ -252,7 +252,7 @@ jobs:
     
     steps:
       - name: Download all timing artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           path: timing-reports/
       

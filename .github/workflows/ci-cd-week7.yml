@@ -212,7 +212,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           name: build-artifacts-${{ github.run_number }}
           path: ${{ env.ARTIFACT_DIR }}
@@ -296,7 +296,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v8
         with:
           path: reports/
       
