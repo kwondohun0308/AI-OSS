@@ -28,7 +28,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Set up Python (Lint)
         uses: actions/setup-python@v6
@@ -81,7 +81,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Set up Python ${{ matrix.python-version }} (${{ matrix.cache-mode }})
         uses: actions/setup-python@v6
@@ -156,7 +156,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Detect code changes
         id: changes
@@ -207,7 +207,7 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Set up Python
         uses: actions/setup-python@v6
