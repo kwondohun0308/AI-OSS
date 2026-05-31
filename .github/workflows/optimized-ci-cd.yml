@@ -138,7 +138,7 @@ jobs:
           echo "⏱️  Total time: ${TOTAL_TIME}ms"
       
       - name: Upload timing data
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: timing-data-${{ matrix.cache-mode }}-py${{ matrix.python-version }}
           path: |
@@ -191,7 +191,7 @@ jobs:
       
       - name: Upload security report
         if: always() && hashFiles('bandit-report.json') != ''
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: security-report
           path: bandit-report.json
@@ -235,7 +235,7 @@ jobs:
           echo "Build: $(date)" > ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
       
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: build-artifacts-${{ github.run_number }}
           path: ${{ env.ARTIFACT_DIR }}/
@@ -297,7 +297,7 @@ jobs:
           cat performance-report.md
       
       - name: Upload performance report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: performance-comparison-report
           path: performance-report.md
@@ -383,7 +383,7 @@ jobs:
           cat OPTIMIZATION_SUMMARY.md
       
       - name: Upload summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: optimization-summary
           path: OPTIMIZATION_SUMMARY.md

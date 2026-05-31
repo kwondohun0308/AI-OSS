@@ -100,7 +100,7 @@ jobs:
       
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
           path: test-results-${{ matrix.os }}-${{ matrix.python-version }}.xml
@@ -155,7 +155,7 @@ jobs:
           echo "Branch: ${{ github.ref }}" >> ${{ env.ARTIFACT_DIR }}/BUILD_INFO.txt
       
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: build-artifacts-${{ github.run_number }}
           path: ${{ env.ARTIFACT_DIR }}/
@@ -192,7 +192,7 @@ jobs:
       
       - name: Upload security report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: security-report
           path: bandit-report.json
@@ -249,7 +249,7 @@ jobs:
           fi
       
       - name: Upload deployment package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-package-${{ github.run_number }}
           path: deployment/app-${{ github.run_number }}.tar.gz
@@ -277,7 +277,7 @@ jobs:
           cat deployment-summary.md
       
       - name: Upload deployment summary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: deployment-summary
           path: deployment-summary.md
@@ -338,7 +338,7 @@ jobs:
           cat reports/WORKFLOW_REPORT.md
       
       - name: Upload final report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: workflow-report
           path: reports/
